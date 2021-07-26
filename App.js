@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import {
   StyleSheet,
   View,
@@ -6,12 +6,18 @@ import {
 
 import Header from './components/header';
 import StartGameScreen from './screens/StartGameScreen';
+import GameScreen from './screens/GameScreen';
 
 const App = () => {
+  const [userNumber, setNumber] = useState();
+  
+  const startGameHandler = (selectedNumber) => {
+    setNumber(selectedNumber);
+  }
   return (
     <View style = {styles.screen}>
       <Header title="Guess a Number"/>
-      <StartGameScreen/>
+      {userNumber ? <GameScreen userChoice={userNumber}/> : <StartGameScreen setNumber = {startGameHandler}/>}
     </View>
   );
 };
