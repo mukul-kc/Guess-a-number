@@ -10,7 +10,7 @@ import NumberContainer from '../components/NumberContainer';
 const StartGameScreen = props => {
     const [enteredValue, setEnteredValue] = useState('');
     const [confirmed, setConfirmed] = useState(false);
-    const [selectedNumber, setNumber] = useState();
+    const [selectedNumber, setSelectedNumber] = useState();
 
     const inputHandler = inputText => {
         setEnteredValue(inputText.replace(/[^0-9]/g, ''));
@@ -28,7 +28,7 @@ const StartGameScreen = props => {
             return;
         }
         setConfirmed(true);
-        setNumber(chosenNumber);
+        setSelectedNumber(chosenNumber);
         setEnteredValue('');
         Keyboard.dismiss();
     };
