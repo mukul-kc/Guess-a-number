@@ -1,12 +1,12 @@
 import React, { useState, useRef, useEffect } from 'react';
 
-import { View, Text, StyleSheet, Button, Alert } from 'react-native';
+import { View, Text, StyleSheet, Button, Alert, ScrollView, Dimensions } from 'react-native';
 import NumberContainer from '../components/NumberContainer';
 import Card from '../components/Card';
 
 const GameScreen = props => {
     const [currentGuess, setGuess] = useState(500);
-    const [numRounds, setRounds] = useState(0);
+    const [pastGuesses, setPastGuess] = useState([500]);
     const curLow = useRef(1);
     const curHigh = useRef(1000)
 
@@ -14,9 +14,9 @@ const GameScreen = props => {
 
     // After rendering 
     useEffect(() => {
-        if(currentGuess === userChoice) {
-            onGameOver(numRounds)
-        } 
+        if (currentGuess === userChoice) {
+            onGameOver(pastGuesses.length);
+        }
     }, [currentGuess, userChoice, onGameOver]);
 
     const nextGuessHandler = (direction) => {
@@ -25,13 +25,13 @@ const GameScreen = props => {
             Alert.alert('You Lied!', 'Liar Liar Bum on fire!', [{ text: 'Sorry', style: 'cancel' }])
             return;
         }
-        if(direction === 'lower') 
+        if (direction === 'lower')
             curHigh.current = currentGuess - 1;
-        else 
+        else
             curLow.current = currentGuess + 1;
 
-        const nextNumber = Math.floor((curHigh.current + curLow.current)/2);
-        setRounds(prevRound => prevRound + 1);
+        const nextNumber = Math.floor((curHigh.current + curLow.current) / 2);
+        setPastGuess(curPastGuesses => [nextNumber, ...curPastGuesses]);
         setGuess(nextNumber);
     }
 
@@ -43,6 +43,18 @@ const GameScreen = props => {
                 <Button title="Lower" onPress={() => nextGuessHandler('lower')} />
                 <Button title="Greater" onPress={() => { nextGuessHandler('higher') }} />
             </Card>
+            <View style={styles.listContainer}>
+                <ScrollView contentContainerStyle={styles.list} >
+                    {pastGuesses.map((val, ind) => {
+                        return (
+                            <View style={styles.listItem} key={ind}>
+                                <Text> Guess #{pastGuesses.length - ind} </Text>
+                                <Text> {val} </Text>
+                            </View>
+                        );
+                    })}
+                </ScrollView>
+            </View>
         </View>
     );
 }
@@ -52,13 +64,34 @@ const styles = StyleSheet.create({
         flex: 1,
         padding: 10,
         alignItems: 'center',
+        backgroundColor: 'white',
     },
     buttonContainer: {
         flexDirection: 'row',
         justifyContent: 'space-evenly',
-        marginTop: 20,
+        marginTop: Dimensions.get('window').height > 600 ? 20 : 10,
         width: 300,
         maxWidth: '80%'
+    },
+    listItem: {
+        borderColor: '#ccc',
+        borderWidth: 1,
+        padding: 15,
+        marginVertical: 10,
+        backgroundColor: 'white',
+        flexDirection: 'row',
+        justifyContent: 'space-evenly',
+        width: 250,
+    },
+    list: {
+        flexGrow: 1,
+        alignItems: 'center',
+        justifyContent: 'flex-end'
+    },
+    listContainer: {
+        flex: 1,
+        padding: 10,
+        width: '80%'
     }
 });
 
